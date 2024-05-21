@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import messagebox
 import random
 import json
+
+
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 def generate_password():
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
@@ -25,6 +27,7 @@ def generate_password():
     entry_pass.insert(0, password)
     window.clipboard_clear()
     window.clipboard_append(password)
+
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def save():
@@ -62,6 +65,23 @@ def save():
                 entry_email_username.delete(0, 'end')
                 entry_pass.delete(0, 'end')
                 data_file.close()
+
+# ---------------------------- FIND PASSWORD ------------------------------- #
+def find_password():
+    website = entry_website.get()
+    try:
+        with open("data.json") as data_file:
+            data = json.load(data_file)
+    except FileNotFoundError:
+        messagebox.showwarning(title="Error", message="No Data File Found.")
+    else:
+        if website in data:
+            email = data[website]['email']
+            password = data[website]['password']
+            messagebox.showinfo(title=website, message=f"Email: {email}\nPassword: {password}")
+        else:
+            messagebox.showwarning(title="Error", message=f"No details for {website} exists.")
+
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password manager")
@@ -84,7 +104,7 @@ pass_label.grid(column=0, row=3)
 entry_website = Entry()
 entry_website.focus()
 entry_website.insert(END, string="")
-entry_website.grid(column=1, row=1, columnspan=2, sticky="EW")
+entry_website.grid(column=1, row=1, sticky="EW")
 
 entry_email_username = Entry()
 entry_email_username.insert(END, string="")
@@ -96,6 +116,9 @@ entry_pass.grid(column=1, row=3, sticky="EW")
 
 generate_password_button = Button(text="Generate Password", command=generate_password)
 generate_password_button.grid(column=2, row=3, sticky="EW")
+
+search_button = Button(text="Search", command=find_password)
+search_button.grid(column=2, row=1, sticky="EW")
 
 add_button = Button(text="Add", width=35, command=save)
 add_button.grid(column=1, row=4, columnspan=2, sticky="EW")
